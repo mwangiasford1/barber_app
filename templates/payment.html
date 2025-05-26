@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Payment{% endblock %}
+
+{% block content %}
+    <h2>Payment for Appointment</h2>
+    <p><strong>Service:</strong> {{ appointment.service }}</p>
+    <p><strong>Date:</strong> {{ appointment.date }} at {{ appointment.time }}</p>
+    <p><strong>Price:</strong> ${{ appointment.price }}</p>
+    <form method="post" action="{{ url_for('auth.pay', appointment_id=appointment.id) }}">
+        <label for="payment_method">Payment Method:</label>
+        <select id="payment_method" name="payment_method" required onchange="showPaymentFields(this.value)">
+            <option value="">Select...</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="paypal">PayPal</option>
+            <option value="mpesa">M-Pesa</option>
+        </select>
+
+        <div id="credit_card_fields" style="display:none; margin-top:1rem;">
+            <label>Card Number:</label>
+            <input type="text" name="card_number" maxlength="19" placeholder="1234 5678 9012 3456">
+            <label>Expiry:</label>
+            <input type="text" name="expiry" maxlength="5" placeholder="MM/YY">
+            <label>CVV:</label>
+            <input type="text" name="cvv" maxlength="4" placeholder="CVV">
+        </div>
+
+        <div id="bank_transfer_fields" style="display:none; margin-top:1rem;">
+            <label>Bank Name:</label>
+            <input type="text" name="bank_name" placeholder="Bank Name">
+            <label>Account Number:</label>
+            <input type="text" name="account_number" placeholder="Account Number">
+        </div>
+
+        <div id="paypal_fields" style="display:none; margin-top:1rem;">
+            <label>PayPal Email:</label>
+            <input type="email" name="paypal_email" placeholder="your@email.com">
+        </div>
+
+        <div id="mpesa_fields" style="display:none; margin-top:1rem;">
+            <label>Mpesa Phone Number:</label>
+            <input type="text" name="mpesa_number" placeholder="e.g. 07XXXXXXXX">
+        </div>
+
+        <button type="submit" style="margin-top:1rem;">Confirm Payment</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showPaymentFields(method) {
+    document.getElementById('credit_card_fields').style.display = (method === 'credit_card') ? 'block' : 'none';
+    document.getElementById('bank_transfer_fields').style.display = (method === 'bank_transfer') ? 'block' : 'none';
+    document.getElementById('paypal_fields').style.display = (method === 'paypal') ? 'block' : 'none';
+    document.getElementById('mpesa_fields').style.display = (method === 'mpesa') ? 'block' : 'none';
+}
+</script>
+{% endblock %}

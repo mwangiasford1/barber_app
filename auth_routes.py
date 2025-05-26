@@ -1,13 +1,14 @@
-from flask import Blueprint, request, render_template, redirect, url_for, jsonify, flash, current_app
+from flask import Blueprint, request, render_template, redirect, url_for, jsonify, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from models import User
-from bson.objectid import ObjectId
+from models import User, Appointment
+from extensions import db
+import openai
 
 auth_bp = Blueprint("auth", __name__)
 
-def get_mongo():
-    return current_app.mongo
+# Make sure to set your OpenAI API key
+openai.api_key = "YOUR_OPENAI_API_KEY"
 
 @auth_bp.route("/")
 def home():
@@ -15,17 +16,16 @@ def home():
 
 @auth_bp.route('/login', methods=['POST', 'GET'])
 def login():
-    mongo = get_mongo()
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = mongo.db.users.find_one({"username": username})
-        if user and check_password_hash(user["password"], password):
-            login_user(User(user))
-            return redirect(url_for('dashboard'))  # Make sure this route exists in app.py
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            return redirect(url_for('dashboard'))
         else:
-            flash("Invalid credentials", "error")
-    return render_template("login.html")
+            flash('Invalid username or password', 'error')
+    return render_template('login.html')
 
 @auth_bp.route('/logout')
 @login_required
@@ -33,40 +33,15 @@ def logout():
     logout_user()
     return redirect(url_for("auth.login"))
 
-@auth_bp.route('/admin-dashboard')
-@login_required
-def admin_dashboard():
-    if hasattr(current_user, "is_admin") and current_user.is_admin():
-        return jsonify({"message": "Welcome, Admin!"})
-    return jsonify({"error": "Access Denied"}), 403
-
-@auth_bp.route('/barber-dashboard')
-@login_required
-def barber_dashboard():
-    if hasattr(current_user, "is_barber") and current_user.is_barber():
-        return jsonify({"message": "Welcome, Barber!"})
-    return jsonify({"error": "Access Denied"}), 403
-
 @auth_bp.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        if not username or not email or not password:
-            flash("All fields are required!", "error")
-            return redirect(url_for('auth.register'))
-        mongo = get_mongo()
-        if mongo.db.users.find_one({"email": email}):
-            flash("Email already exists!", "error")
-            return redirect(url_for('auth.register'))
-        hashed_password = generate_password_hash(password)
-        mongo.db.users.insert_one({
-            "username": username,
-            "email": email,
-            "password": hashed_password,
-            "role": "customer"
-        })
+        username = request.form['username']
+        email = request.form['email']
+        password = generate_password_hash(request.form['password'])
+        user = User(username=username, email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
         flash("User created successfully!", "success")
         return redirect(url_for('auth.login'))
     return render_template("register.html")
@@ -74,45 +49,44 @@ def register():
 @auth_bp.route('/add_appointment', methods=['GET', 'POST'])
 @login_required
 def add_appointment():
-    mongo = get_mongo()
     if request.method == 'POST':
-        data = request.form
-        appointment = {
-            "user_id": current_user.id,
-            "name": data.get('name', current_user.username),
-            "service": data.get('service'),
-            "date": data.get('date'),
-            "time": data.get('time'),
-            "price": data.get('price'),
-            "payment_method": data.get('payment_method'),  # Save payment method
-            "status": "booked"
-        }
-        mongo.db.appointments.insert_one(appointment)
-        flash("Appointment booked!", "success")
-        return redirect(url_for('auth.my_appointments'))
-    return render_template("add_appointment.html")
+        date = request.form.get('date')
+        time = request.form.get('time')
+        service = request.form.get('service')
+        price = request.form.get('price')
+        # Add any other fields you need
+
+        appointment = Appointment(
+            user_id=current_user.id,
+            date=date,
+            time=time,
+            service=service,
+            price=price
+        )
+        db.session.add(appointment)
+        db.session.commit()
+        flash('Appointment booked! Please proceed to payment.', 'success')
+        return redirect(url_for('auth.my_appointments'))  # or url_for('auth.add_appointment') if you want to stay on the booking page
+
+    appointments = Appointment.query.filter_by(user_id=current_user.id).all()
+    return render_template('appointments.html', appointments=appointments)
 
 @auth_bp.route('/my_appointments')
 @login_required
 def my_appointments():
-    mongo = get_mongo()
-    appointments = list(mongo.db.appointments.find({"user_id": current_user.id}))
-    # Convert ObjectId to string for JSON
-    for appt in appointments:
-        appt['_id'] = str(appt['_id'])
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.is_json:
-        return jsonify({"appointments": appointments})
+    appointments = Appointment.query.filter_by(user_id=current_user.id).all()
     return render_template("my_appointments.html", appointments=appointments)
 
-@auth_bp.route('/cancel_appointment/<appointment_id>')
+@auth_bp.route('/cancel_appointment/<int:appointment_id>')
 @login_required
 def cancel_appointment(appointment_id):
-    mongo = get_mongo()
-    mongo.db.appointments.delete_one({
-        "_id": ObjectId(appointment_id),
-        "user_id": current_user.id
-    })
-    flash("Appointment cancelled.", "success")
+    appointment = Appointment.query.filter_by(id=appointment_id, user_id=current_user.id).first()
+    if appointment:
+        db.session.delete(appointment)
+        db.session.commit()
+        flash("Appointment cancelled.", "success")
+    else:
+        flash("Appointment not found.", "error")
     return redirect(url_for('auth.my_appointments'))
 
 @auth_bp.route('/ai_assistant', methods=['GET', 'POST'])
@@ -121,13 +95,47 @@ def ai_assistant():
     response = None
     if request.method == 'POST':
         user_question = request.form.get('question')
-        # Placeholder AI logic (replace with real AI API call)
         if user_question:
-            # Example: simple keyword-based response
-            if "hours" in user_question.lower():
-                response = "We are open from 9am to 7pm, Monday to Saturday."
-            elif "services" in user_question.lower():
-                response = "We offer haircuts, beard trims, and more. Check our services page!"
-            else:
-                response = "I'm here to help! Please ask about our services, hours, or appointments."
+            try:
+                ai_result = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful assistant for a barbershop."},
+                        {"role": "user", "content": user_question}
+                    ]
+                )
+                response = ai_result['choices'][0]['message']['content']
+            except Exception:
+                response = "Sorry, I couldn't process your request right now."
     return render_template("ai_assistant.html", response=response)
+
+@auth_bp.route('/pay/<int:appointment_id>', methods=['GET', 'POST'])
+@login_required
+def pay(appointment_id):
+    appointment = Appointment.query.get_or_404(appointment_id)
+    if request.method == 'POST':
+        payment_method = request.form.get('payment_method')
+        # You can process each payment method as needed
+        if payment_method == 'credit_card':
+            card_number = request.form.get('card_number')
+            expiry = request.form.get('expiry')
+            cvv = request.form.get('cvv')
+            # Add your credit card processing logic here
+        elif payment_method == 'bank_transfer':
+            bank_name = request.form.get('bank_name')
+            account_number = request.form.get('account_number')
+            # Add your bank transfer processing logic here
+        elif payment_method == 'paypal':
+            paypal_email = request.form.get('paypal_email')
+            # Add your PayPal processing logic here
+        elif payment_method == 'mpesa':
+            mpesa_number = request.form.get('mpesa_number')
+            # Add your M-Pesa processing logic here
+
+        # Mark as paid and save payment method
+        appointment.paid = True
+        appointment.payment_method = payment_method
+        db.session.commit()
+        flash('Payment successful!', 'success')
+        return redirect(url_for('auth.my_appointments'))
+    return render_template('payment.html', appointment=appointment)

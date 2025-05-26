@@ -9,22 +9,12 @@
         {% for appt in appointments %}
             <li>
                 {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
-                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt._id) }}">Cancel</a>]
+                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt.id) }}">Cancel</a>]
             </li>
         {% endfor %}
         </ul>
     {% else %}
         <p>No appointments found.</p>
     {% endif %}
-
-    <form id="appointment-form" action="{{ url_for('auth.add_appointment') }}" method="POST">
-        <!-- ...existing fields... -->
-        <label for="payment_method">Payment Method:</label>
-        <select id="payment_method" name="payment_method" required>
-            <option value="cash">Cash</option>
-            <option value="credit_card">Credit Card</option>
-            <option value="mobile_money">Mobile Money</option>
-        </select>
-        <button type="submit">Book Appointment</button>
-    </form>
+    
 {% endblock %}

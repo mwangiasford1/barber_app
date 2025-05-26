@@ -3,53 +3,94 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-    <h2>Welcome to the Dashboard!</h2>
-    <p>Here you can manage appointments and user profiles.</p>
+<section class="barbershop-services">
+    <h1>Welcome to Our Luxury Grooming & Spa</h1>
+    <p>Top-quality international barbering, massages, and spa treatments!</p>
+    
+    <h2>Haircuts & Styling</h2>
+    <ul>
+        <li>Classic Haircut – $15</li>
+        <li>Fade & Tapered Cut – $18</li>
+        <li>Textured Modern Styles – $20</li>
+    </ul>
 
-    <h3>Your Upcoming Appointments</h3>
-    {% if appointments %}
-        <ul>
-        {% for appt in appointments %}
-            <li>
-                {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
-                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt._id) }}">Cancel</a>]
-            </li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No upcoming appointments.</p>
-    {% endif %}
+    <h2>Beard Grooming</h2>
+    <ul>
+        <li>Beard Trim & Shaping – $12</li>
+        <li>Hot Towel Shave – $15</li>
+    </ul>
 
-    <hr>
+    <h2>Massages & Spa Treatments</h2>
+    <ul>
+        <li>Head, Neck & Shoulder Massage – $22</li>
+        <li>Deep Tissue Full-Body Massage – $40</li>
+    </ul>
 
-    <h3>Book a New Appointment</h3>
-    <form action="{{ url_for('auth.add_appointment') }}" method="POST">
-        <label for="service-select">Choose a service:</label>
-        <select id="service-select" name="service" onchange="updatePrice(this.value)">
-          <option value="15">Haircut - $15</option>
-          <option value="25">Hair + Beard - $25</option>
-        </select>
-        <p id="service-price">Price: $15</p>
-        <input type="hidden" id="hiddenPrice" name="price" value="15">
+    <h2>Exclusive International Grooming Services</h2>
+    <p>Turkish Hot Towel Shave, Japanese Precision Cutting, and more!</p>
 
-        <label for="date">Date:</label>
-        <input type="date" id="date" name="date" required>
-        <label for="time">Time:</label>
-        <input type="time" id="time" name="time" required>
-        <button type="submit">Book Appointment</button>
-    </form>
+    <h3>Book Your Session Today!</h3>
+    <p>Call [Your Contact Number] or visit [Your Address]. Open daily from 9 AM – 9 PM.</p>
+</section>
+
+<hr>
+
+<h3>Your Upcoming Appointments</h3>
+{% if appointments %}
+    <ul>
+    {% for appt in appointments %}
+        <li>
+            {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
+            <a href="{{ url_for('auth.cancel_appointment', appointment_id=appt.id) }}">Cancel</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No upcoming appointments.</p>
+{% endif %}
+
+<hr>
+
+<h3>Book a New Appointment</h3>
+<form action="{{ url_for('auth.add_appointment') }}" method="POST">
+    <label for="service-select">Choose a service:</label>
+    <select id="service-select" name="service" onchange="updatePrice(this.value)">
+      <option value="Classic Haircut">Classic Haircut – $15</option>
+      <option value="Fade & Tapered Cut">Fade & Tapered Cut – $18</option>
+      <option value="Textured Modern Styles">Textured Modern Styles – $20</option>
+      <option value="Beard Trim & Shaping">Beard Trim & Shaping – $12</option>
+      <option value="Hot Towel Shave">Hot Towel Shave – $15</option>
+      <option value="Head, Neck & Shoulder Massage">Head, Neck & Shoulder Massage – $22</option>
+      <option value="Deep Tissue Full-Body Massage">Deep Tissue Full-Body Massage – $40</option>
+    </select>
+    <p id="service-price">Price: $15</p>
+    <input type="hidden" id="hiddenPrice" name="price" value="15">
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+    <label for="time">Time:</label>
+    <input type="time" id="time" name="time" required>
+    <button type="submit">Book Appointment</button>
+</form>
 {% endblock %}
 
 {% block scripts %}
 <script>
 function updatePrice(val) {
-    document.getElementById('service-price').textContent = "Price: $" + val;
-    document.getElementById('hiddenPrice').value = val;
+    let price = "15";
+    if (val === "Classic Haircut") price = "15";
+    else if (val === "Fade & Tapered Cut") price = "18";
+    else if (val === "Textured Modern Styles") price = "20";
+    else if (val === "Beard Trim & Shaping") price = "12";
+    else if (val === "Hot Towel Shave") price = "15";
+    else if (val === "Head, Neck & Shoulder Massage") price = "22";
+    else if (val === "Deep Tissue Full-Body Massage") price = "40";
+    document.getElementById('service-price').textContent = "Price: $" + price;
+    document.getElementById('hiddenPrice').value = price;
 }
 document.addEventListener('DOMContentLoaded', function() {
     updatePrice(document.getElementById('service-select').value);
 });
 </script>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
 {% endblock %}
 

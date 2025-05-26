@@ -38,7 +38,14 @@
         {% for appt in appointments %}
             <li>
                 {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
-                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt._id) }}">Cancel</a>]
+                {% if not appt.paid %}
+                    <form action="{{ url_for('auth.pay', appointment_id=appt.id) }}" method="get" style="display:inline;">
+                        <button type="submit">Pay Now</button>
+                    </form>
+                {% else %}
+                    <span style="color:green;">Paid</span>
+                {% endif %}
+                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt.id) }}">Cancel</a>]
             </li>
         {% endfor %}
         </ul>

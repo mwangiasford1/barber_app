@@ -9,18 +9,21 @@
 <body>
 
     <header>
-        <h1>Barbershop Management System</h1>
+        <img src="https://cdn.leonardo.ai/users/1fab88cf-561d-436b-8728-8fe2f04717f3/generations/ada5cd76-d240-4e08-8344-3792ea9c14de/Leonardo_Phoenix_10_Design_a_modern_sleek_logo_for_a_barbersho_0.jpg"
+             alt="Barbershop Logo"
+             style="height:60px; vertical-align:middle; margin-right:16px; border-radius:12px;">
+        <h1 style="display:inline; vertical-align:middle;">Barbershop Management System</h1>
         <nav>
             <ul>
-                <li><a href="{{ url_for('auth.admin_dashboard') }}">Dashboard</a></li>
-                <li><a href="{{ url_for('auth.add_appointment') }}">Appointments</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
                 {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('auth.add_appointment') }}">Book Appointment</a></li>
                     <li><a href="{{ url_for('auth.my_appointments') }}">My Appointments</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                 {% else %}
                     <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
                 {% endif %}
-                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
                 <li><a href="{{ url_for('auth.ai_assistant') }}">AI Assistant</a></li>
             </ul>
         </nav>

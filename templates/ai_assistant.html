@@ -4,14 +4,11 @@
 
 {% block content %}
     <h2>AI Assistant</h2>
-    <form method="POST">
-        <label for="question">Ask me anything about the barbershop:</label><br>
-        <input type="text" id="question" name="question" style="width:60%;" required>
+    <form method="post">
+        <input type="text" name="question" placeholder="Ask the AI assistant..." required>
         <button type="submit">Ask</button>
     </form>
     {% if response %}
-        <div style="margin-top:20px; padding:10px; background:#f8fafc; border-radius:8px;">
-            <strong>Assistant:</strong> {{ response }}
-        </div>
+        <div class="ai-response"><strong>Assistant:</strong> {{ response }}</div>
     {% endif %}
 {% endblock %}

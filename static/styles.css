@@ -7,18 +7,19 @@ body, h1, h2, h3, p, ul, li, form, input, select, button {
 
 /* Body Styling */
 body {
-    font-family: 'Poppins', Arial, sans-serif;
-    background: linear-gradient(135deg, #17181a 0%, #e2e6ea 100%);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f7f7f7;
     color: #222;
     min-height: 100vh;
 }
 
 /* Header & Navbar */
 header {
-    background: #23272f;
-    padding: 32px 0 16px 0;
+    background: #222;
+    padding: 1.5rem 0;
     text-align: center;
     color: #fff;
+    margin-bottom: 2rem;
     box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
 }
 
@@ -28,36 +29,51 @@ header h1 {
     margin-bottom: 10px;
 }
 
+/* Logo Styling */
+header img {
+    height: 80px;
+    border-radius: 16px;
+    margin-right: 24px;
+    vertical-align: middle;
+    box-shadow: 0 4px 16px rgba(44, 62, 80, 0.18);
+    background: #fff;
+    padding: 6px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+header img:hover {
+    box-shadow: 0 8px 32px rgba(243, 156, 18, 0.18);
+    transform: scale(1.04);
+}
+
 nav ul {
     list-style: none;
     display: flex;
     justify-content: center;
-    gap: 32px;
-    padding: 12px 0;
-    background: #34495e;
-    border-radius: 8px;
-    margin: 0 auto;
-    max-width: 700px;
+    gap: 2rem;
+    padding: 0;
+    margin: 0;
 }
 
 nav ul li {
-    margin: 0;
+    display: inline;
 }
 
 nav ul li a {
     text-decoration: none;
     color: #fff;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 1.08rem;
     letter-spacing: 1px;
     padding: 8px 18px;
-    border-radius: 4px;
-    transition: background 0.2s, color 0.2s;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.13); /* Minimal translucent background */
+    transition: color 0.2s, background 0.2s;
 }
 
-nav ul li a:hover, nav ul li a.active {
-    background: #f39c12;
-    color: #23272f;
+nav ul li a:hover {
+    color: #ffd700;
+    background: rgba(0,0,0,0.22); /* Slightly darker on hover */
 }
 
 /* Main Content */
@@ -113,11 +129,17 @@ form {
     display: flex;
     flex-direction: column;
     gap: 18px;
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    max-width: 500px;
+    margin: 2rem auto;
 }
 
 input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="time"], select {
     padding: 10px 12px;
-    border: 1px solid #bfc9d1;
+    border: 1px solid #bbb;
     border-radius: 5px;
     font-size: 1rem;
     background: #f8fafc;
@@ -133,6 +155,9 @@ label {
     font-weight: 500;
     margin-bottom: 4px;
     color: #34495e;
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.3rem;
 }
 
 .flashes {
@@ -163,31 +188,110 @@ label {
     border-left-color: #27ae60;
 }
 
+/* Barbershop Services */
+.barbershop-services {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 2rem 2.5rem;
+    margin: 2rem auto;
+    max-width: 700px;
+}
+
+.barbershop-services h1 {
+    color: #222;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.barbershop-services h2 {
+    color: #00796b;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.barbershop-services ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.barbershop-services li {
+    margin-bottom: 0.3rem;
+    font-size: 1.08rem;
+}
+
+/* Divider */
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 2rem 0;
+}
+
+/* Appointment List */
+ul#appointments-list {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    padding: 1rem 2rem;
+    max-width: 600px;
+    margin: 1.5rem auto;
+}
+
+ul#appointments-list li {
+    margin-bottom: 1rem;
+    font-size: 1.05rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+ul#appointments-list form {
+    display: inline;
+    margin: 0 0.5rem;
+    padding: 0;
+    box-shadow: none;
+    background: none;
+}
+
+/* Price Highlight */
+#service-price {
+    font-weight: bold;
+    color: #00796b;
+    margin-bottom: 1rem;
+}
+
+/* AI Response Box */
+.ai-response {
+    background: #f1f8e9;
+    border-left: 4px solid #43a047;
+    padding: 1rem;
+    margin-top: 1.2rem;
+    border-radius: 8px;
+    font-size: 1.08rem;
+    color: #222;
+}
+
 /* Responsive Design */
 @media screen and (max-width: 768px) {
     nav ul {
         flex-direction: column;
         align-items: center;
-        gap: 0;
+        gap: 1rem;
     }
     nav ul li {
         margin-bottom: 10px;
-
-
-
-
-
-
-
-margin-bottom: 10px;
     }
     nav ul li:last-child {
-margin-bottom: 0;
+        margin-bottom: 0;
     }
     main {
-padding: 12px;
-margin-top: 16px;
-margin-bottom: 16px;
+        padding: 12px;
+        margin-top: 16px;
+        margin-bottom: 16px;
+    }
+    .barbershop-services, form, ul#appointments-list {
+        padding: 1rem;
+        max-width: 98vw;
     }
 }
 
