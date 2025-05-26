@@ -1,0 +1,129 @@
+Barbershop Management System - Documentation
+Version: 1.0 Developed by: Asford Mwangi Frameworks Used: Flask, SQLAlchemy, Flask-Login Database: MySQL
+
+1. Overview
+The Barbershop Management System is a web-based application designed to manage barber services, customer appointments, and user authentication. It supports role-based access for admins, barbers, and customers, ensuring a seamless experience for both staff and clients.
+
+2. Installation Guide
+Prerequisites
+Python 3.13
+
+Flask
+
+MySQL Server
+
+Virtual Environment (venv)
+
+Required Python Libraries (flask_sqlalchemy, flask_login, pymysql)
+
+Setup Instructions
+Clone the repository
+
+bash
+git clone https://github.com/your-repo/barbershop-management.git
+cd barbershop-management
+Create & activate a virtual environment
+
+bash
+python -m venv venv
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+Install dependencies
+
+bash
+pip install -r requirements.txt
+Configure MySQL Database
+
+Create a new database:
+
+sql
+CREATE DATABASE barbershop_db;
+Update SQLALCHEMY_DATABASE_URI in config.py:
+
+python
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://username:password@localhost/barbershop_db"
+Initialize and migrate the database
+
+bash
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+Run the application
+
+bash
+flask run
+Access the system at http://127.0.0.1:5000/
+
+3. Features
+✅ User Authentication (Flask-Login) ✅ Role-Based Access Control (Admin, Barber, Customer) ✅ Appointment Booking System ✅ AI Assistant Integration ✅ Dashboard for Managing Services
+
+4. Project Structure
+barbershop_management/
+│── app.py
+│── extensions.py
+│── models.py
+│── auth_routes.py
+│── templates/
+│   ├── dashboard.html
+│   ├── login.html
+│   ├── register.html
+│── static/
+│   ├── styles.css
+│   ├── images/
+│── venv/
+│── requirements.txt
+│── config.py
+│── migrations/
+5. API Routes
+Authentication
+POST /auth/login – User login
+
+GET /auth/logout – User logout
+
+POST /auth/register – New user registration
+
+Appointments
+POST /auth/add_appointment – Book an appointment
+
+GET /auth/my_appointments – View user appointments
+
+GET /auth/cancel_appointment/<appointment_id> – Cancel appointment
+
+Dashboard & AI Assistant
+GET /dashboard – Main dashboard view
+
+POST /auth/ai_assistant – AI chatbot assistance
+
+6. Troubleshooting
+Common Errors & Solutions
+✅ Database Connection Issues:
+
+Ensure MySQL server is running
+
+Verify SQLALCHEMY_DATABASE_URI in config.py
+
+Run migrations (flask db upgrade)
+
+✅ Circular Import Errors:
+
+Ensure db is imported from extensions.py
+
+Remove redundant imports from app.py
+
+✅ Login Issues:
+
+Check password hashing (generate_password_hash())
+
+Verify Flask-Login session management
+
+7. Future Enhancements
+💡 Advanced AI Chatbot for Service Recommendations
+
+💡 Online Payment Integration
+
+💡 Customer Feedback & Reviews System
+
+💡 Multi-location Salon Management Features
+
+8. Contact & Support
+📧 Email: support@barbershop-system.com 🌐 Website: www.barbershop-system.com
