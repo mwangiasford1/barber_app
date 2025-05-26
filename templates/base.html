@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Barbershop Management{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+    <header>
+        <h1>Barbershop Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('auth.admin_dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('auth.add_appointment') }}">Appointments</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('auth.my_appointments') }}">My Appointments</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                <li><a href="{{ url_for('auth.ai_assistant') }}">AI Assistant</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Barbershop Management</p>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

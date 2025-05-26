@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Book an Appointment{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the Dashboard!</h2>
+    <p>Here you can manage appointments and user profiles.</p>
+
+    <h3>Book a New Appointment</h3>
+    <form id="appointment-form" action="{{ url_for('auth.add_appointment') }}" method="POST">
+        <label for="service-select">Choose a service:</label>
+        <select id="service-select" name="service" onchange="updatePrice(this.value)">
+          <option value="15">Haircut - $15</option>
+          <option value="25">Hair + Beard - $25</option>
+        </select>
+        <p id="service-price">Price: $15</p>
+        <input type="hidden" id="hiddenPrice" name="price" value="15">
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <label for="time">Time:</label>
+        <input type="time" id="time" name="time" required>
+
+        <label for="payment_method">Payment Method:</label>
+        <select id="payment_method" name="payment_method" required>
+            <option value="cash">Cash</option>
+            <option value="credit_card">Credit Card</option>
+            <option value="mobile_money">Mobile Money</option>
+        </select>
+        <button type="submit">Book Appointment</button>
+    </form>
+
+    <hr>
+
+    <h3>Your Upcoming Appointments</h3>
+    {% if appointments %}
+        <ul id="appointments-list">
+        {% for appt in appointments %}
+            <li>
+                {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
+                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt._id) }}">Cancel</a>]
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming appointments.</p>
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updatePrice(val) {
+    document.getElementById('service-price').textContent = "Price: $" + val;
+    document.getElementById('hiddenPrice').value = val;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    updatePrice(document.getElementById('service-select').value);
+});
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}

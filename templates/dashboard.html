@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the Dashboard!</h2>
+    <p>Here you can manage appointments and user profiles.</p>
+
+    <h3>Your Upcoming Appointments</h3>
+    {% if appointments %}
+        <ul>
+        {% for appt in appointments %}
+            <li>
+                {{ appt.date }} at {{ appt.time }} — {{ appt.service }} (${{ appt.price }})
+                [<a href="{{ url_for('auth.cancel_appointment', appointment_id=appt._id) }}">Cancel</a>]
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No upcoming appointments.</p>
+    {% endif %}
+
+    <hr>
+
+    <h3>Book a New Appointment</h3>
+    <form action="{{ url_for('auth.add_appointment') }}" method="POST">
+        <label for="service-select">Choose a service:</label>
+        <select id="service-select" name="service" onchange="updatePrice(this.value)">
+          <option value="15">Haircut - $15</option>
+          <option value="25">Hair + Beard - $25</option>
+        </select>
+        <p id="service-price">Price: $15</p>
+        <input type="hidden" id="hiddenPrice" name="price" value="15">
+
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <label for="time">Time:</label>
+        <input type="time" id="time" name="time" required>
+        <button type="submit">Book Appointment</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updatePrice(val) {
+    document.getElementById('service-price').textContent = "Price: $" + val;
+    document.getElementById('hiddenPrice').value = val;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    updatePrice(document.getElementById('service-select').value);
+});
+</script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+{% endblock %}
+
